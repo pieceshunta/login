@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/gestures.dart';
+import 'package:myapp/auth_page.dart';
+import 'package:myapp/utils.dart';
 import 'firebase_options.dart';
 import 'package:flutter/material.dart';
 
@@ -20,6 +23,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: messengerKey,
       title: 'Flutter Demo',
       theme: ThemeData(
         // This is the theme of your application.
@@ -31,10 +35,10 @@ class MyApp extends StatelessWidget {
         // or simply save your changes to "hot reload" in a Flutter IDE).
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
-        primarySwatch: Colors.green,
+        primarySwatch: Colors.blueGrey,
       ),
       navigatorKey: navigatorKey,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: '会員登録'),
     );
   }
 }
@@ -58,38 +62,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final emailController = TextEditingController();
-  final passwordController = TextEditingController();
   final user = FirebaseAuth.instance.currentUser;
-
-  int _counter = 3;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter += 3;
-    });
-  }
-
-  Future signIn() async {
-    showDialog(
-        context: context,
-        builder: (context) => Center(child: CircularProgressIndicator()));
-    try {
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: emailController.text.trim(),
-        password: passwordController.text.trim(),
-      );
-    } catch (e) {
-      print(e);
-    }
-
-    navigatorKey.currentState!.popUntil((route) => route.isFirst);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -122,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text(
-                      'signed in as',
+                      'ようこそ！！',
                       style: TextStyle(fontSize: 16),
                     ),
                     const SizedBox(
@@ -133,81 +106,23 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     const SizedBox(height: 40),
                     ElevatedButton.icon(
-                        onPressed: () => FirebaseAuth.instance.signOut(),
-                        icon: const Icon(
-                          Icons.arrow_back,
-                          size: 32,
-                        ),
-                        label: const Text(
-                          'sign out',
-                          style: TextStyle(fontSize: 24),
-                        ))
+                      onPressed: () => FirebaseAuth.instance.signOut(),
+                      icon: const Icon(
+                        Icons.arrow_back,
+                        size: 22,
+                      ),
+                      label: const Text(
+                        'ログアウト',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ),
                   ],
                 ),
               );
             } else {
-              return Center(
-                // Center is a layout widget. It takes a single child and positions it
-                // in the middle of the parent.
-                child: Column(
-                  // Column is also a layout widget. It takes a list of children and
-                  // arranges them vertically. By default, it sizes itself to fit its
-                  // children horizontally, and tries to be as tall as its parent.
-                  //
-                  // Invoke "debug painting" (press "p" in the console, choose the
-                  // "Toggle Debug Paint" action from the Flutter Inspector in Android
-                  // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-                  // to see the wireframe for each widget.
-                  //
-                  // Column has various properties to control how it sizes itself and
-                  // how it positions its children. Here we use mainAxisAlignment to
-                  // center the children vertically; the main axis here is the vertical
-                  // axis because Columns are vertical (the cross axis would be
-                  // horizontal).
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Text(
-                      'You have pushed the button this many times:',
-                    ),
-                    Text(
-                      '$_counter',
-                      style: Theme.of(context).textTheme.headline3,
-                    ),
-                    const SizedBox(height: 40),
-                    TextField(
-                      controller: emailController,
-                      cursorColor: Colors.white,
-                      textInputAction: TextInputAction.next,
-                      decoration: const InputDecoration(labelText: 'email'),
-                    ),
-                    const SizedBox(height: 4),
-                    TextField(
-                      controller: passwordController,
-                      textInputAction: TextInputAction.done,
-                      decoration: const InputDecoration(labelText: 'password'),
-                      obscureText: true,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton.icon(
-                        onPressed: signIn,
-                        icon: const Icon(
-                          Icons.lock_open,
-                          size: 32,
-                        ),
-                        label: const Text(
-                          'Sign In',
-                          style: TextStyle(fontSize: 24),
-                        ))
-                  ],
-                ),
-              );
+              return AuthPage();
             }
           }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 }
