@@ -11,6 +11,8 @@ void main() async {
   runApp(const MyApp());
 }
 
+final navigatorKey = GlobalKey<NavigatorState>();
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -31,6 +33,7 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.green,
       ),
+      navigatorKey: navigatorKey,
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
@@ -73,10 +76,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future signIn() async {
-    await FirebaseAuth.instance.signInWithEmailAndPassword(
-      email: emailController.text.trim(),
-      password: passwordController.text.trim(),
-    );
+    showDialog(
+        context: context,
+        builder: (context) => Center(child: CircularProgressIndicator()));
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+      );
+    } catch (e) {
+      print(e);
+    }
+
+    navigatorKey.currentState!.popUntil((route) => route.isFirst);
   }
 
   @override
@@ -96,7 +108,15 @@ class _MyHomePageState extends State<MyHomePage> {
       body: StreamBuilder<User?>(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasError) {
+              return const Center(
+                child: Text('error'),
+              );
+            } else if (snapshot.hasData) {
               return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -108,11 +128,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     const SizedBox(
                       height: 8,
                     ),
-                    user != null
-                        ? Text(
-                            user!.email ?? 'undefined email',
-                          )
-                        : Text('null user'),
+                    Text(
+                      user!.email ?? 'undefined email',
+                    ),
                     const SizedBox(height: 40),
                     ElevatedButton.icon(
                         onPressed: () => FirebaseAuth.instance.signOut(),
