@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter/gestures.dart';
 import 'package:myapp/auth_page.dart';
 import 'package:myapp/utils.dart';
 import 'firebase_options.dart';
@@ -62,8 +61,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final user = FirebaseAuth.instance.currentUser;
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -102,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: 8,
                     ),
                     Text(
-                      user!.email ?? 'undefined email',
+                      snapshot.data!.email ?? 'undefined email',
                     ),
                     const SizedBox(height: 40),
                     ElevatedButton.icon(

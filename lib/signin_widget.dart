@@ -19,13 +19,13 @@ class _SignUpWidgetState extends State<SignInWidget> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
-  @override
-  void dispose() {
-    emailController.dispose();
-    passwordController.dispose();
+  // @override
+  // void dispose() {
+  //   emailController.dispose();
+  //   passwordController.dispose();
 
-    super.dispose();
-  }
+  //   super.dispose();
+  // }
 
   Future signIn() async {
     final isValid = formKey.currentState!.validate();
@@ -43,8 +43,6 @@ class _SignUpWidgetState extends State<SignInWidget> {
           email: emailController.text.trim(),
           password: passwordController.text.trim());
     } on FirebaseAuthException catch (e) {
-      print(e);
-
       Utils.showSnackBar(e.message);
     }
     navigatorKey.currentState!.popUntil((route) => route.isFirst);
